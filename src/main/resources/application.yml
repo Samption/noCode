@@ -7,6 +7,8 @@ spring:
     url: jdbc:mysql://localhost:3306/noCode
     username: root
     password: 123456
+  profiles:
+    active: local
 
 server:
   port: 8123
@@ -23,3 +25,31 @@ knife4j:
   enable: true
   setting:
     language: zh_cn
+
+# AI
+langchain4j:
+  open-ai:
+    chat-model:
+      # deekseek
+      base-url: https://api.deepseek.com
+      model-name: deepseek-chat
+      # qwen
+      # base-url: https://dashscope.aliyuncs.com/compatible-mode/v1
+      # model-name: qwen-plus
+
+      # 最大token数
+      max-tokens: 8192
+      # 结构化输出，deepseek严格的json模式
+      strict-json-schema: true
+      response-format: json_object
+
+      # 开启日志
+      log-requests: true
+      log-responses: true
+
+    streaming-chat-model: # 流式模型，不支持结构化输出
+      base-url: https://api.deepseek.com
+      model-name: deepseek-chat
+      max-tokens: 8192
+      log-requests: true
+      log-responses: true
