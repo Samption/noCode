@@ -4,7 +4,9 @@ import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.core.service.IService;
 import com.sxl.nocode.model.dto.app.AppQueryRequest;
 import com.sxl.nocode.model.entity.App;
+import com.sxl.nocode.model.entity.User;
 import com.sxl.nocode.model.vo.AppVO;
+import reactor.core.publisher.Flux;
 
 import java.util.List;
 
@@ -34,4 +36,14 @@ public interface AppService extends IService<App> {
      * @return
      */
     QueryWrapper getQueryWrapper(AppQueryRequest appQueryRequest);
+
+    Flux<String> chatToGenCode(Long appId, String message, User loginUser);
+
+    /**
+     * 部署应用
+     * @param appId 待部署应用id
+     * @param loginUser 当前登录用户，用于权限校验
+     * @return 返回部署成功后的应用访问地址
+     */
+    String deployApp(Long appId, User loginUser);
 }
