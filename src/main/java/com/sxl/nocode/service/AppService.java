@@ -46,4 +46,7 @@ public interface AppService extends IService<App> {
      * @return 返回部署成功后的应用访问地址
      */
     String deployApp(Long appId, User loginUser);
+
+
+
 }

@@ -98,6 +98,18 @@
           <artifactId>langchain4j-reactor</artifactId>
           <version>1.1.0-beta7</version>
         </dependency>
+        <!-- langchain4j-redis 依赖 -->
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j-community-redis-spring-boot-starter</artifactId>
+            <version>1.1.0-beta7</version>
+        </dependency>
+        <!-- caffeine -->
+        <dependency>
+            <groupId>com.github.ben-manes.caffeine</groupId>
+            <artifactId>caffeine</artifactId>
+        </dependency>
+
 
 
 
