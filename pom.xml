@@ -28,6 +28,8 @@
     </scm>
     <properties>
         <java.version>21</java.version>
+        <!-- 覆盖 Spring Boot 管理的 Jedis 版本，langchain4j-community-redis-1.12.2-beta22 需要 7.2.1 -->
+        <jedis.version>7.2.1</jedis.version>
     </properties>
     <dependencies>
         <dependency>
@@ -90,24 +92,24 @@
         <dependency>
             <groupId>dev.langchain4j</groupId>
             <artifactId>langchain4j</artifactId>
-            <version>1.1.0</version>
+            <version>1.12.2</version>
         </dependency>
         <dependency>
             <groupId>dev.langchain4j</groupId>
             <artifactId>langchain4j-open-ai-spring-boot-starter</artifactId>
-            <version>1.1.0-beta7</version>
+            <version>1.12.2-beta22</version>
         </dependency>
         <!-- langchain4j-reactor 响应式编程依赖 -->
         <dependency>
           <groupId>dev.langchain4j</groupId>
           <artifactId>langchain4j-reactor</artifactId>
-          <version>1.1.0-beta7</version>
+          <version>1.12.2-beta22</version>
         </dependency>
         <!-- langchain4j-redis 依赖 -->
         <dependency>
             <groupId>dev.langchain4j</groupId>
             <artifactId>langchain4j-community-redis-spring-boot-starter</artifactId>
-            <version>1.1.0-beta7</version>
+            <version>1.12.2-beta22</version>
         </dependency>
         <!-- caffeine -->
         <dependency>

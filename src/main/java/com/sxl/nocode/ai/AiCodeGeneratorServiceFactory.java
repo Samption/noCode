@@ -62,7 +62,6 @@ public class AiCodeGeneratorServiceFactory {
         return getAiCodeGeneratorService(appId, CodeGenTypeEnum.HTML);
     }
 
-
     /**
      * 根据 appId 和代码生成类型获取服务（带缓存）
      */
@@ -80,7 +79,7 @@ public class AiCodeGeneratorServiceFactory {
                 .builder()
                 .id(appId)
                 .chatMemoryStore(redisChatMemoryStore)
-                .maxMessages(20)
+                .maxMessages(200)
                 .build();
         // 从数据库加载历史对话到记忆中
         chatHistoryService.loadChatHistoryToMemory(appId, chatMemory, 20);
@@ -93,8 +92,7 @@ public class AiCodeGeneratorServiceFactory {
                     .tools(new FileWriteTool())
                     // 处理工具调用幻觉，返回错误提示信息
                     .hallucinatedToolNameStrategy(toolExecutionRequest -> ToolExecutionResultMessage.from(
-                            toolExecutionRequest, "Error: there is no tool called " + toolExecutionRequest.name()
-                    ))
+                            toolExecutionRequest, "Error: there is no tool called " + toolExecutionRequest.name()))
                     .build();
             // HTML 和多文件生成使用默认模型
             case HTML, MULTI_FILE -> AiServices.builder(AiCodeGeneratorService.class)
@@ -106,8 +104,6 @@ public class AiCodeGeneratorServiceFactory {
                     "不支持的代码生成类型: " + codeGenType.getValue());
         };
     }
-
-
 
     /**
      * 默认提供一个 Bean
@@ -125,5 +121,3 @@ public class AiCodeGeneratorServiceFactory {
     }
 
 }
-
-
