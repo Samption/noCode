@@ -7,6 +7,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.time.Duration;
+
 @Configuration
 @ConfigurationProperties(prefix = "langchain4j.open-ai.chat-model")
 @Data
@@ -23,7 +25,7 @@ public class ReasoningStreamingChatModelConfig {
     public StreamingChatModel reasoningStreamingChatModel() {
         // 为了测试方便临时修改
         final String modelName = "deepseek-chat";
-        final int maxTokens = 8192;
+        final int maxTokens = 16384;
         // 生产环境使用：
         // final String modelName = "deepseek-reasoner";
         // final int maxTokens = 32768;
@@ -32,8 +34,9 @@ public class ReasoningStreamingChatModelConfig {
                 .baseUrl(baseUrl)
                 .modelName(modelName)
                 .maxTokens(maxTokens)
-                .logRequests(true)
-                .logResponses(true)
+                .timeout(Duration.ofMinutes(10))
+                .logRequests(false)
+                .logResponses(false)
                 .build();
     }
 }
