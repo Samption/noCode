@@ -2,14 +2,7 @@
   <a-layout-footer class="footer">
     <div class="footer-content">
       <p class="copyright">
-        <a
-          href="https://github.com/Samption/noCode"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="author-link"
-        >
-          个人项目 by Samption
-        </a>
+        <!-- Footer Content Hidden / Removed -->
       </p>
     </div>
   </a-layout-footer>

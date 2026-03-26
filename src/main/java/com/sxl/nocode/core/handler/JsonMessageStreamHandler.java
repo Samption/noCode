@@ -75,6 +75,16 @@ public class JsonMessageStreamHandler {
         StreamMessage streamMessage = JSONUtil.toBean(chunk, StreamMessage.class);
         StreamMessageTypeEnum typeEnum = StreamMessageTypeEnum.getEnumByValue(streamMessage.getType());
         switch (typeEnum) {
+            case AI_THINKING -> {
+                AiThinkingMessage thinkingMessage = JSONUtil.toBean(chunk, AiThinkingMessage.class);
+                String data = thinkingMessage.getData();
+                // 暂时：推理内容不持久化到聊天历史，只推送给前端展示
+                // 返回 JSON 格式，带 thinking 标记让前端特殊处理
+                JSONObject thinkingJson = new JSONObject();
+                thinkingJson.set("thinking", true);
+                thinkingJson.set("content", data);
+                return thinkingJson.toString();
+            }
             case AI_RESPONSE -> {
                 AiResponseMessage aiMessage = JSONUtil.toBean(chunk, AiResponseMessage.class);
                 String data = aiMessage.getData();

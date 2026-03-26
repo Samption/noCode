@@ -117,6 +117,13 @@
             <artifactId>caffeine</artifactId>
         </dependency>
 
+        <!-- 智谱 AI 集成依赖 -->
+        <dependency>
+            <groupId>ai.z.openapi</groupId>
+            <artifactId>zai-sdk</artifactId>
+            <version>0.3.3</version>
+        </dependency>
+
 
 
 

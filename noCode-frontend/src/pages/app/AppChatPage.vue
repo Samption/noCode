@@ -60,8 +60,26 @@
                 <a-avatar :src="aiAvatar" />
               </div>
               <div class="message-content">
+                <!-- 可折叠的思考过程块 -->
+                <div v-if="message.thinking" class="thinking-block">
+                  <div
+                    class="thinking-header"
+                    @click="message.thinkingExpanded = !message.thinkingExpanded"
+                  >
+                    <span class="thinking-icon">{{ message.thinkingExpanded ? '▼' : '▶' }}</span>
+                    <span class="thinking-label">💭 思考过程</span>
+                    <span v-if="message.isThinking" class="thinking-status">
+                      <a-spin size="small" />
+                      <span>思考中...</span>
+                    </span>
+                    <span v-else class="thinking-done">思考完成</span>
+                  </div>
+                  <div v-show="message.thinkingExpanded" class="thinking-content">
+                    <MarkdownRenderer :content="message.thinking" />
+                  </div>
+                </div>
                 <MarkdownRenderer v-if="message.content" :content="message.content" />
-                <div v-if="message.loading" class="loading-indicator">
+                <div v-if="message.loading && !message.thinking" class="loading-indicator">
                   <a-spin size="small" />
                   <span>AI 正在思考...</span>
                 </div>
@@ -253,6 +271,9 @@ interface Message {
   content: string
   loading?: boolean
   createTime?: string
+  thinking?: string
+  thinkingExpanded?: boolean
+  isThinking?: boolean
 }
 
 const messages = ref<Message[]>([])
@@ -498,6 +519,7 @@ const generateCode = async (userMessage: string, aiMessageIndex: number) => {
     })
 
     let fullContent = ''
+    let fullThinking = ''
 
     // 处理接收到的消息
     eventSource.onmessage = function (event) {
@@ -508,9 +530,36 @@ const generateCode = async (userMessage: string, aiMessageIndex: number) => {
         const parsed = JSON.parse(event.data)
         const content = parsed.d
 
-        // 拼接内容
+        // 检查是否是思考内容（后端返回的 JSON 带 thinking 标记）
         if (content !== undefined && content !== null) {
-          fullContent += content
+          let actualContent: string
+          try {
+            const innerParsed = JSON.parse(content)
+            if (innerParsed && innerParsed.thinking === true) {
+              // 这是思考内容
+              fullThinking += innerParsed.content || ''
+              messages.value[aiMessageIndex].thinking = fullThinking
+              messages.value[aiMessageIndex].thinkingExpanded = true
+              messages.value[aiMessageIndex].isThinking = true
+              messages.value[aiMessageIndex].loading = false
+              scrollToBottom()
+              return
+            } else {
+              actualContent = content
+            }
+          } catch {
+            // 不是 JSON，当作普通文本
+            actualContent = content
+          }
+
+          // 收到正式回复时，标记思考完成并折叠
+          if (fullThinking && messages.value[aiMessageIndex].isThinking) {
+            messages.value[aiMessageIndex].isThinking = false
+            messages.value[aiMessageIndex].thinkingExpanded = false
+          }
+
+          // 拼接正式回复内容
+          fullContent += actualContent
           messages.value[aiMessageIndex].content = fullContent
           messages.value[aiMessageIndex].loading = false
           scrollToBottom()
@@ -530,8 +579,7 @@ const generateCode = async (userMessage: string, aiMessageIndex: number) => {
       eventSource?.close()
 
       // 延迟更新预览，确保后端已完成处理
-      setTimeout(async () => {
-        await fetchAppInfo()
+      setTimeout(() => {
         updatePreview()
       }, 1000)
     })
@@ -568,8 +616,7 @@ const generateCode = async (userMessage: string, aiMessageIndex: number) => {
         isGenerating.value = false
         eventSource?.close()
 
-        setTimeout(async () => {
-          await fetchAppInfo()
+        setTimeout(() => {
           updatePreview()
         }, 1000)
       } else {
@@ -771,11 +818,13 @@ onUnmounted(() => {
 
 <style scoped>
 #appChatPage {
-  height: 100vh;
+  height: calc(100vh - 64px);
   display: flex;
   flex-direction: column;
   padding: 16px;
   background: #fdfdfd;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 /* 顶部栏 */
@@ -829,7 +878,7 @@ onUnmounted(() => {
 }
 
 .messages-container {
-  flex: 0.9;
+  flex: 1;
   padding: 16px;
   overflow-y: auto;
   scroll-behavior: smooth;
@@ -874,6 +923,71 @@ onUnmounted(() => {
 
 .message-avatar {
   flex-shrink: 0;
+}
+
+/* 思考过程块样式 */
+.thinking-block {
+  margin-bottom: 8px;
+  border: 1px solid #bae0ff;
+  border-radius: 8px;
+  overflow: hidden;
+  background: linear-gradient(135deg, #f0f5ff 0%, #e6f7ff 100%);
+}
+
+.thinking-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  cursor: pointer;
+  user-select: none;
+  font-size: 13px;
+  color: #1890ff;
+  transition: background-color 0.2s;
+}
+
+.thinking-header:hover {
+  background: rgba(24, 144, 255, 0.08);
+}
+
+.thinking-icon {
+  font-size: 10px;
+  transition: transform 0.2s;
+  color: #69c0ff;
+}
+
+.thinking-label {
+  font-weight: 600;
+}
+
+.thinking-status {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
+  font-size: 12px;
+  color: #69c0ff;
+}
+
+.thinking-done {
+  margin-left: auto;
+  font-size: 12px;
+  color: #00b894;
+  font-weight: 500;
+}
+
+.thinking-content {
+  padding: 8px 12px;
+  border-top: 1px solid #bae0ff;
+  font-size: 13px;
+  color: #636e72;
+  line-height: 1.6;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.thinking-content :deep(p) {
+  margin: 4px 0;
 }
 
 .loading-indicator {

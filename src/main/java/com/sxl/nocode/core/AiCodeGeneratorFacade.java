@@ -6,6 +6,7 @@ import com.sxl.nocode.ai.AiCodeGeneratorServiceFactory;
 import com.sxl.nocode.ai.model.HtmlCodeResult;
 import com.sxl.nocode.ai.model.MultiFileCodeResult;
 import com.sxl.nocode.ai.model.message.AiResponseMessage;
+import com.sxl.nocode.ai.model.message.AiThinkingMessage;
 import com.sxl.nocode.ai.model.message.ToolExecutedMessage;
 import com.sxl.nocode.ai.model.message.ToolRequestMessage;
 import com.sxl.nocode.core.parser.CodeParserExecutor;
@@ -135,7 +136,11 @@ public class AiCodeGeneratorFacade {
      */
     private Flux<String> processTokenStream(TokenStream tokenStream) {
         return Flux.create(sink -> {
-            tokenStream.onPartialResponse((String partialResponse) -> {
+            tokenStream.onPartialThinking((partialThinking) -> {
+                        AiThinkingMessage aiThinkingMessage = new AiThinkingMessage(partialThinking.text());
+                        sink.next(JSONUtil.toJsonStr(aiThinkingMessage));
+                    })
+                    .onPartialResponse((String partialResponse) -> {
                         AiResponseMessage aiResponseMessage = new AiResponseMessage(partialResponse);
                         sink.next(JSONUtil.toJsonStr(aiResponseMessage));
                     })
