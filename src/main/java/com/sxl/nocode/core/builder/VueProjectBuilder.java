@@ -116,8 +116,34 @@ public class VueProjectBuilder {
                     workingDir,
                     command.split("\\s+") // 命令分割为数组
             );
+            // 启动线程读取输出流，避免缓冲区满导致进程阻塞
+            Thread stdoutReader = new Thread(() -> {
+                try (var reader = new java.io.BufferedReader(new java.io.InputStreamReader(process.getInputStream()))) {
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        log.info("命令输出: {}", line);
+                    }
+                } catch (Exception e) {
+                    log.error("读取stdout失败: {}", e.getMessage());
+                }
+            });
+            Thread stderrReader = new Thread(() -> {
+                try (var reader = new java.io.BufferedReader(new java.io.InputStreamReader(process.getErrorStream()))) {
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        log.error("命令错误输出: {}", line);
+                    }
+                } catch (Exception e) {
+                    log.error("读取stderr失败: {}", e.getMessage());
+                }
+            });
+            stdoutReader.start();
+            stderrReader.start();
             // 等待进程完成，设置超时
             boolean finished = process.waitFor(timeoutSeconds, TimeUnit.SECONDS);
+            // 等待读取线程完成
+            stdoutReader.join(1000);
+            stderrReader.join(1000);
             if (!finished) {
                 log.error("命令执行超时（{}秒），强制终止进程", timeoutSeconds);
                 process.destroyForcibly();

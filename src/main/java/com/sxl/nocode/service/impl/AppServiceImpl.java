@@ -46,7 +46,7 @@ import java.util.stream.Collectors;
  */
 @Service
 @Slf4j
-public class AppServiceImpl extends ServiceImpl<AppMapper, App>  implements AppService{
+public class AppServiceImpl extends ServiceImpl<AppMapper, App> implements AppService {
 
     @Resource
     private UserService userService;
@@ -98,7 +98,6 @@ public class AppServiceImpl extends ServiceImpl<AppMapper, App>  implements AppS
             return appVO;
         }).collect(Collectors.toList());
     }
-
 
     @Override
     public QueryWrapper getQueryWrapper(AppQueryRequest appQueryRequest) {
@@ -215,7 +214,7 @@ public class AppServiceImpl extends ServiceImpl<AppMapper, App>  implements AppS
         boolean updateResult = this.updateById(updateApp);
         ThrowUtils.throwIf(!updateResult, ErrorCode.OPERATION_ERROR, "更新应用部署信息失败");
         // 10. 返回可访问的 URL
-        return String.format("%s/%s/", AppConstant.CODE_DEPLOY_HOST, deployKey);
+        return String.format("%s/static/deploy/%s/", AppConstant.CODE_DEPLOY_HOST, deployKey);
     }
 
     /**
@@ -244,6 +243,5 @@ public class AppServiceImpl extends ServiceImpl<AppMapper, App>  implements AppS
         // 删除应用
         return super.removeById(id);
     }
-
 
 }
