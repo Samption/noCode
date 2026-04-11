@@ -2,6 +2,7 @@ package com.sxl.nocode.service;
 
 import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.core.service.IService;
+import com.sxl.nocode.model.dto.app.AppAddRequest;
 import com.sxl.nocode.model.dto.app.AppQueryRequest;
 import com.sxl.nocode.model.entity.App;
 import com.sxl.nocode.model.entity.User;
@@ -55,5 +56,11 @@ public interface AppService extends IService<App> {
      */
     void generateAppScreenshotAsync(Long appId, String appUrl);
 
-
+    /**
+     * 创建应用
+     * @param appAddRequest
+     * @param loginUser
+     * @return
+     */
+    Long createApp(AppAddRequest appAddRequest, User loginUser);
 }

@@ -57,8 +57,8 @@ langchain4j:
       # 最大token数
       max-tokens: 8192
       # 结构化输出，deepseek严格的json模式
-      strict-json-schema: true
-      response-format: json_object
+#      strict-json-schema: true
+#      response-format: json_object
 
       # 开启日志
       log-requests: true
