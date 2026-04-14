@@ -63,6 +63,7 @@ langchain4j:
       # 开启日志
       log-requests: true
       log-responses: true
+      timeout: 120s
 
     # 流式模型
     streaming-chat-model: # 流式模型，不支持结构化输出
