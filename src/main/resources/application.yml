@@ -65,6 +65,7 @@ langchain4j:
       log-requests: true
       log-responses: true
       timeout: 120s
+      max-retries: 3
 
     # 流式模型
     streaming-chat-model: # 流式模型，不支持结构化输出
