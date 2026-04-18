@@ -17,8 +17,9 @@ import com.sxl.nocode.exception.ThrowUtils;
 import com.sxl.nocode.model.dto.app.*;
 import com.sxl.nocode.model.entity.App;
 import com.sxl.nocode.model.entity.User;
-import com.sxl.nocode.model.enums.CodeGenTypeEnum;
 import com.sxl.nocode.model.vo.AppVO;
+import com.sxl.nocode.ratelimit.annotation.RateLimit;
+import com.sxl.nocode.ratelimit.enums.RateLimitType;
 import com.sxl.nocode.service.AppService;
 import com.sxl.nocode.service.ProjectDownloadService;
 import com.sxl.nocode.service.UserService;
@@ -61,6 +62,7 @@ public class AppController {
      * @return 生成结果流
      */
     @GetMapping(value = "/chat/gen/code", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    @RateLimit(limitType = RateLimitType.USER, rate = 5, rateInterval = 60, message = "AI 对话请求过于频繁，请稍后再试")
     public Flux<ServerSentEvent<String>> chatToGenCode(@RequestParam Long appId,
                                                        @RequestParam String message,
                                                        HttpServletRequest request) {
